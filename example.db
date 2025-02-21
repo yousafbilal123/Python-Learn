@@ -1,0 +1,111 @@
+import sqlite3
+
+# Function to create a connection to the SQLite database
+def create_connection():
+    try:
+        # Connect to the SQLite database (this creates the database file if it doesn't exist)
+        connection = sqlite3.connect("example.db")
+        print("Connection to the database was successful.")
+        return connection
+    except sqlite3.Error as e:
+        print(f"An error occurred while connecting to the database: {e}")
+        return None
+
+# Function to create the users table if it doesn't exist
+def create_table():
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                age INTEGER NOT NULL
+            );
+        ''')
+        conn.commit()
+        conn.close()
+
+# Function to create (insert) a new record
+def create_user(name, age):
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO users (name, age)
+            VALUES (?, ?)
+        ''', (name, age))
+        conn.commit()
+        conn.close()
+
+# Function to read all records
+def read_users():
+    conn = create_connection()
+    users = []
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users')
+        users_data = cursor.fetchall()
+        for row in users_data:
+            users.append({"id": row[0], "name": row[1], "age": row[2]})
+        conn.close()
+    return users
+
+# Function to update an existing record
+def update_user(user_id, name, age):
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE users
+            SET name = ?, age = ?
+            WHERE id = ?
+        ''', (name, age, user_id))
+        conn.commit()
+        conn.close()
+
+# Function to delete a record
+def delete_user(user_id):
+    conn = create_connection()
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            DELETE FROM users WHERE id = ?
+        ''', (user_id,))
+        conn.commit()
+        conn.close()
+
+# Main function to demonstrate the CRUD operations
+def main():
+    create_table()  # Create table if it doesn't exist
+
+    # Create some users
+    create_user("Alice", 30)
+    create_user("Bob", 25)
+
+    # Read and display all users
+    print("Users before update:")
+    users = read_users()
+    for user in users:
+        print(user)
+
+    # Update a user's details
+    update_user(1, "Alice", 35)  # Updating Alice's age to 35
+
+    # Read and display users again
+    print("\nUsers after update:")
+    users = read_users()
+    for user in users:
+        print(user)
+
+    # Delete a user
+    delete_user(2)  # Deleting Bob
+
+    # Read and display users after deletion
+    print("\nUsers after deletion:")
+    users = read_users()
+    for user in users:
+        print(user)
+
+if __name__ == "__main__":
+    main()
