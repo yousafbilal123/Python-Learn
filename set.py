@@ -1,3 +1,2 @@
-thisset = {"apple", "banana", "cherry", "apple"}
-
-print(thisset)
+marks = {2,2,2,2,2, 22, 33, 44}
+print(marks)

@@ -1,4 +1,6 @@
-price = 59
-tax = 0.25
-txt = f"The price is {price + (price * tax)} dollars"
-print(txt)
+name = "asad cvcc"
+
+
+print(name.find("C"))
+print(name.upper())
+print(name)
